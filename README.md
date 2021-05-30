@@ -63,3 +63,8 @@ Added features X, Y, and Z.
 * [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
 
 **Enjoy!**
+
+
+## 注意事项
+
+如果watch命令没有自动启动需要手动执行一下，不然编译结果不会热更新；
