@@ -33,18 +33,26 @@ export function getAnalysis(sourceCode: string): AnalysisInfo {
         const callee = node.callee;
         if (callee.object && callee.object.type === 'ThisExpression') {
           const callName = callee.property.name;
+          // if (callName === 'showDuplicatedMessage') {
+          //   callName;
+          // }
           if (!methods.has(callName)) {return;}
-          const bottomUp = ancestors.reverse();
+          const bottomUp = ancestors.reversxe();
           for (let i = 0; i < bottomUp.length; i++) {
             const cur = bottomUp[i];
             const parent = bottomUp[i + 1];
-            if (cur.type === 'FunctionExpression' && parent.type === 'Property' && methods.has(parent.key.name)) {
+            // 两种调用的AST结构情况，不知道为啥会有这种层级差异？
+            const isTarget = (cur.type === 'FunctionExpression' && parent.type === 'Property' && methods.has(parent?.key.name)) ||
+              (cur.type === 'Property' && cur?.value.type === 'FunctionExpression' && methods.has(cur?.key.name));
+            if (isTarget) {
+              // 函数/方法名称
+              const functionName = parent.key ? parent.key.name : cur.key.name;
               if (trigger.has(callName)) {
                 const list = trigger.get(callName);
-                list?.add(parent.key.name);
+                list?.add(functionName);
               } else {
                 const list = new Set<string>();
-                list.add(parent.key.name);
+                list.add(functionName);
                 trigger.set(callName, list);
               }
               break;
